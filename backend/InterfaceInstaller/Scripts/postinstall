@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Define paths
+PLIST_SRC="/Applications/Interface/interface.plist"
+PLIST_DEST="/Library/LaunchAgents/moritz.bernhofer.interface.plist"
+
+# Ensure the backend is executable
+chmod +x /Applications/Interface/backend
+
+# Move the plist file to LaunchAgents
+cp "$PLIST_SRC" "$PLIST_DEST"
+
+# Set correct permissions
+chmod 644 "$PLIST_DEST"
+chown root:wheel "$PLIST_DEST"
+
+# Load the launch agent
+launchctl load -w "$PLIST_DEST"
+
+exit 0

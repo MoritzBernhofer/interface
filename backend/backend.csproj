@@ -15,8 +15,4 @@
     <_ContentIncludedByDefault Remove="InterfaceInstaller\Interface\backend.staticwebassets.endpoints.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="InterfaceInstaller\Scripts\" />
-  </ItemGroup>
-
 </Project>
