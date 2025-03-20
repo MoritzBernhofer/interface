@@ -6,7 +6,7 @@ All commands are to be executed in the root of the project.
 
 ### Step 1
 
-public to application
+publish to application
 
 ```shell 
 dotnet publish -c Release -r osx-arm64 --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
