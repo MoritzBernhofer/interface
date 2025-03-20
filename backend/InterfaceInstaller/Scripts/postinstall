@@ -7,14 +7,20 @@ PLIST_DEST="/Library/LaunchAgents/moritz.bernhofer.interface.plist"
 # Ensure the backend is executable
 chmod +x /Applications/Interface/backend
 
-# Move the plist file to LaunchAgents
+# Copy the plist to LaunchAgents
 cp "$PLIST_SRC" "$PLIST_DEST"
 
 # Set correct permissions
 chmod 644 "$PLIST_DEST"
 chown root:wheel "$PLIST_DEST"
 
-# Load the launch agent
-launchctl load -w "$PLIST_DEST"
+# Unload (in case an old version exists)
+launchctl bootout system "$PLIST_DEST" 2>/dev/null
+
+# Load the launch agent immediately
+launchctl bootstrap system "$PLIST_DEST"
+
+# Start the program immediately
+launchctl kickstart -k system/moritz.bernhofer.interface
 
 exit 0
