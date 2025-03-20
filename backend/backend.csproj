@@ -6,4 +6,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="MyAppInstaller\MyApp\publish\appsettings.Development.json" />
+    <_ContentIncludedByDefault Remove="MyAppInstaller\MyApp\publish\appsettings.json" />
+    <_ContentIncludedByDefault Remove="MyAppInstaller\MyApp\publish\backend.staticwebassets.endpoints.json" />
+    <_ContentIncludedByDefault Remove="InterfaceInstaller\Interface\appsettings.Development.json" />
+    <_ContentIncludedByDefault Remove="InterfaceInstaller\Interface\appsettings.json" />
+    <_ContentIncludedByDefault Remove="InterfaceInstaller\Interface\backend.staticwebassets.endpoints.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="InterfaceInstaller\Scripts\" />
+  </ItemGroup>
+
 </Project>
