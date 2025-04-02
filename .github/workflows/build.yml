@@ -26,26 +26,28 @@ jobs:
       - name: Build for macOS
         run: npm run package -- --mac
 
-      - name: List contents of release folder
-        run: ls -R release
+      - name: List mac build outputs
+        run: ls -R release/build
 
       - name: Upload mac x64 build
         uses: actions/upload-artifact@v4
         with:
           name: mac-x64
-          path: release/mac/**/*
+          path: release/build/mac/**/*
 
       - name: Upload mac arm64 build
         uses: actions/upload-artifact@v4
         with:
           name: mac-arm64
-          path: release/mac-arm64/**/*
+          path: release/build/mac-arm64/**/*
 
-      - name: Upload mac dmg
+      - name: Upload .dmg and .zip files
         uses: actions/upload-artifact@v4
         with:
-          name: mac-dmg
-          path: release/*.dmg
+          name: mac-dmg-zip
+          path: |
+            release/build/*.dmg
+            release/build/*.zip
 
   build-linux:
     runs-on: ubuntu-latest
@@ -66,20 +68,20 @@ jobs:
       - name: Build for Linux
         run: npm run package -- --linux
 
-      - name: List contents of release folder
-        run: ls -R release
+      - name: List Linux build outputs
+        run: ls -R release/build
 
       - name: Upload Linux AppImage
         uses: actions/upload-artifact@v4
         with:
           name: linux-appimage
-          path: release/*.AppImage
+          path: release/build/*.AppImage
 
       - name: Upload other Linux builds
         uses: actions/upload-artifact@v4
         with:
           name: linux-extra
-          path: release/linux-*/**
+          path: release/build/linux-*/**
 
   build-windows:
     runs-on: windows-latest
@@ -100,17 +102,14 @@ jobs:
       - name: Build for Windows
         run: npm run package -- --win
 
-      - name: List contents of release folder
-        run: dir release /s
-
-      - name: Upload Windows executable
+      - name: Upload Windows .exe
         uses: actions/upload-artifact@v4
         with:
           name: windows-exe
-          path: release/*.exe
+          path: release/build/*.exe
 
       - name: Upload other Windows builds
         uses: actions/upload-artifact@v4
         with:
           name: windows-extra
-          path: release/win-*/**
+          path: release/build/win-*/**
