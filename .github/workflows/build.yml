@@ -26,11 +26,26 @@ jobs:
       - name: Build for macOS
         run: npm run package -- --mac
 
-      - name: Upload mac build
+      - name: Upload mac x64
         uses: actions/upload-artifact@v4
         with:
-          name: mac-build
-          path: interface_client/dist/
+          name: mac-x64
+          path: |
+            interface_client/release/mac/**
+      
+      - name: Upload mac arm64
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-arm64
+          path: |
+            interface_client/release/mac-arm64/**
+
+      - name: Upload dmg
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-dmg
+          path: |
+            interface_client/release/*.dmg
 
   build-linux:
     runs-on: ubuntu-latest
@@ -51,11 +66,13 @@ jobs:
       - name: Build for Linux
         run: npm run package -- --linux
 
-      - name: Upload linux build
+      - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-build
-          path: interface_client/dist/
+          path: |
+            interface_client/release/*.AppImage
+            interface_client/release/linux-*/**
 
   build-windows:
     runs-on: windows-latest
@@ -76,9 +93,11 @@ jobs:
       - name: Build for Windows
         run: npm run package -- --win
 
-      - name: Upload windows build
+      - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: interface_client/dist/
+          path: |
+            interface_client/release/*.exe
+            interface_client/release/win-*/**
 
