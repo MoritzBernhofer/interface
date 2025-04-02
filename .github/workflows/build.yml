@@ -46,6 +46,9 @@ jobs:
           name: mac-dmg
           path: |
             interface_client/release/*.dmg
+      - name: List contents of release dir
+        run: ls -R release
+
 
   build-linux:
     runs-on: ubuntu-latest
@@ -73,6 +76,8 @@ jobs:
           path: |
             interface_client/release/*.AppImage
             interface_client/release/linux-*/**
+      - name: List contents of release dir
+        run: ls -R release
 
   build-windows:
     runs-on: windows-latest
@@ -100,4 +105,5 @@ jobs:
           path: |
             interface_client/release/*.exe
             interface_client/release/win-*/**
-
+      - name: List contents of release dir
+        run: ls -R release
