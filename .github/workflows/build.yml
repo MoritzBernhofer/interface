@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-latest
     defaults:
       run:
-        working-directory: ./client
+        working-directory: ./interface_client
     steps:
       - uses: actions/checkout@v3
 
@@ -30,13 +30,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mac-build
-          path: client/dist/
+          path: interface_client/dist/
 
   build-linux:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./client
+        working-directory: ./interface_client
     steps:
       - uses: actions/checkout@v3
 
@@ -55,13 +55,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux-build
-          path: client/dist/
+          path: interface_client/dist/
 
   build-windows:
     runs-on: windows-latest
     defaults:
       run:
-        working-directory: ./client
+        working-directory: ./interface_client
     steps:
       - uses: actions/checkout@v3
 
@@ -80,5 +80,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: client/dist/
+          path: interface_client/dist/
 
