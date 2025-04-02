@@ -26,29 +26,26 @@ jobs:
       - name: Build for macOS
         run: npm run package -- --mac
 
-      - name: Upload mac x64
+      - name: List contents of release folder
+        run: ls -R release
+
+      - name: Upload mac x64 build
         uses: actions/upload-artifact@v4
         with:
           name: mac-x64
-          path: |
-            release/mac/**
-      
-      - name: Upload mac arm64
+          path: release/mac/**/*
+
+      - name: Upload mac arm64 build
         uses: actions/upload-artifact@v4
         with:
           name: mac-arm64
-          path: |
-            release/mac-arm64/**
+          path: release/mac-arm64/**/*
 
-      - name: Upload dmg
+      - name: Upload mac dmg
         uses: actions/upload-artifact@v4
         with:
           name: mac-dmg
-          path: |
-            /release/*.dmg
-      - name: List contents of release dir
-        run: ls -R release
-
+          path: release/*.dmg
 
   build-linux:
     runs-on: ubuntu-latest
@@ -69,15 +66,20 @@ jobs:
       - name: Build for Linux
         run: npm run package -- --linux
 
-      - name: Upload Linux artifacts
+      - name: List contents of release folder
+        run: ls -R release
+
+      - name: Upload Linux AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: linux-build
-          path: |
-            interface_client/release/*.AppImage
-            interface_client/release/linux-*/**
-      - name: List contents of release dir
-        run: ls -R release
+          name: linux-appimage
+          path: release/*.AppImage
+
+      - name: Upload other Linux builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-extra
+          path: release/linux-*/**
 
   build-windows:
     runs-on: windows-latest
@@ -98,12 +100,17 @@ jobs:
       - name: Build for Windows
         run: npm run package -- --win
 
-      - name: Upload Windows artifacts
+      - name: List contents of release folder
+        run: dir release /s
+
+      - name: Upload Windows executable
         uses: actions/upload-artifact@v4
         with:
-          name: windows-build
-          path: |
-            interface_client/release/*.exe
-            interface_client/release/win-*/**
-      - name: List contents of release dir
-        run: ls -R release
+          name: windows-exe
+          path: release/*.exe
+
+      - name: Upload other Windows builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-extra
+          path: release/win-*/**
