@@ -9,9 +9,6 @@ on:
 jobs:
   build-mac:
     runs-on: macos-latest
-    defaults:
-      run:
-        working-directory: ./interface_client
     steps:
       - uses: actions/checkout@v3
 
@@ -21,39 +18,40 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd interface_client
+          npm install
 
       - name: Build for macOS
-        run: npm run package -- --mac
+        run: |
+          cd interface_client
+          npm run package -- --mac
 
       - name: Show output structure
-        run: ls -laR release/build
+        run: ls -laR interface_client/release/build
 
       - name: Upload mac x64
         uses: actions/upload-artifact@v4
         with:
           name: mac-x64
-          path: release/build/mac/**/*
+          path: interface_client/release/build/mac/**/*
 
       - name: Upload mac arm64
         uses: actions/upload-artifact@v4
         with:
           name: mac-arm64
-          path: release/build/mac-arm64/**/*
+          path: interface_client/release/build/mac-arm64/**/*
 
       - name: Upload dmg + zip
         uses: actions/upload-artifact@v4
         with:
           name: mac-installers
           path: |
-            release/build/*.dmg
-            release/build/*.zip
+            interface_client/release/build/*.dmg
+            interface_client/release/build/*.zip
 
   build-linux:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./interface_client
     steps:
       - uses: actions/checkout@v3
 
@@ -63,31 +61,29 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd interface_client
+          npm install
 
       - name: Build for Linux
-        run: npm run package -- --linux
-
-      - name: Show output structure
-        run: ls -laR release/build
+        run: |
+          cd interface_client
+          npm run package -- --linux
 
       - name: Upload Linux AppImage
         uses: actions/upload-artifact@v4
         with:
           name: linux-appimage
-          path: release/build/*.AppImage
+          path: interface_client/release/build/*.AppImage
 
       - name: Upload other Linux builds
         uses: actions/upload-artifact@v4
         with:
           name: linux-extra
-          path: release/build/linux-*/**
+          path: interface_client/release/build/linux-*/**
 
   build-windows:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: ./interface_client
     steps:
       - uses: actions/checkout@v3
 
@@ -97,22 +93,23 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd interface_client
+          npm install
 
       - name: Build for Windows
-        run: npm run package -- --win
-
-      - name: Show output structure
-        run: ls -laR release/build
+        run: |
+          cd interface_client
+          npm run package -- --win
 
       - name: Upload Windows .exe
         uses: actions/upload-artifact@v4
         with:
           name: windows-exe
-          path: release/build/*.exe
+          path: interface_client/release/build/*.exe
 
       - name: Upload other Windows builds
         uses: actions/upload-artifact@v4
         with:
           name: windows-extra
-          path: release/build/win-*/**
+          path: interface_client/release/build/win-*/**
