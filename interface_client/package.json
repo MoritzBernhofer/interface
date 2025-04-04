@@ -40,8 +40,6 @@
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true NODE_OPTIONS=\"-r ts-node/register --no-warnings\" webpack --config ./.erb/configs/webpack.config.main.prod.ts",
     "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true NODE_OPTIONS=\"-r ts-node/register --no-warnings\" webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
     "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
-    "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "prestart": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true NODE_OPTIONS=\"-r ts-node/register --no-warnings\" webpack --config ./.erb/configs/webpack.config.main.dev.ts",
@@ -59,8 +57,7 @@
     "overrides": [
       {
         "files": [
-          ".prettierrc",
-          ".eslintrc"
+          ".prettierrc"
         ],
         "options": {
           "parser": "json"
@@ -122,8 +119,6 @@
     "@types/react-dom": "^19.0.4",
     "@types/react-test-renderer": "^19.0.0",
     "@types/webpack-bundle-analyzer": "^4.7.0",
-    "@typescript-eslint/eslint-plugin": "^8.26.1",
-    "@typescript-eslint/parser": "^8.26.1",
     "browserslist-config-erb": "^0.0.3",
     "chalk": "^4.1.2",
     "concurrently": "^9.1.2",
@@ -136,18 +131,6 @@
     "electron-builder": "^25.1.8",
     "electron-devtools-installer": "^4.0.0",
     "electronmon": "^2.0.3",
-    "eslint": "^8.57.1",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-erb": "^4.1.0",
-    "eslint-import-resolver-typescript": "^4.1.1",
-    "eslint-import-resolver-webpack": "^0.13.10",
-    "eslint-plugin-compat": "^6.0.2",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jest": "^28.11.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-promise": "^7.2.1",
-    "eslint-plugin-react": "^7.37.4",
-    "eslint-plugin-react-hooks": "^5.2.0",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.6.3",
     "identity-obj-proxy": "^3.0.0",
