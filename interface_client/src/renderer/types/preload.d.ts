@@ -1,8 +1,4 @@
-export interface ElectronHandler {
-  ipcRenderer: {
-    sendMessage: (channel: string, msg: string) => void;
-  };
-}
+import { ElectronHandler } from '../../main/preload';
 
 declare global {
   interface Window {
