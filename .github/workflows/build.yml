@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   build-mac:
+    if: contains(github.event.head_commit.message, '#build')
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -55,6 +56,7 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '#build')
     steps:
       - uses: actions/checkout@v3
 
@@ -87,6 +89,7 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
+    if: contains(github.event.head_commit.message, '#build')
     steps:
       - uses: actions/checkout@v3
 
@@ -118,6 +121,7 @@ jobs:
           path: interface_client/release/build/win-*/**
 
   release:
+    if: contains(github.event.head_commit.message, '#build')
     needs: [ build-mac, build-linux, build-windows ]
     runs-on: ubuntu-latest
     steps:
