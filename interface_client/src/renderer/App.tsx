@@ -1,8 +1,14 @@
 import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
+import { useEffect } from 'react';
+import { sendMessage } from './services/ipc';
 
 function Hello() {
-  window.test_api.ipcRenderer.sendMessage('sendMessage', 'hello');
+  useEffect(() => {
+    if (window.test_api) {
+      sendMessage("servas")
+    }
+  }, []);
 
   return <div>hello component</div>;
 }

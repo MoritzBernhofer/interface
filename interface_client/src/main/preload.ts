@@ -1,9 +1,8 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
 const electronHandler = {
   ipcRenderer: {
-    sendMessage: (channel: string, msg: string) =>
-      ipcRenderer.send(channel, msg),
+    sendMessage: (channel: string, msg: string) => ipcRenderer.send(channel, msg),
   },
 };
 
