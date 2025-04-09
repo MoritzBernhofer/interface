@@ -1,6 +1,6 @@
 namespace central_server.Services.DatabaseService.models;
 
-public class Client
+public class Client(string name)
 {
     
 }
