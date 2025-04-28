@@ -1,5 +1,7 @@
-docker build \
-  --platform=linux/amd64 \
+docker buildx create --use
+docker buildx build \
+  --platform linux/amd64 \
+  --load \
   -f Dockerfile \
-  -t myapi:latest \
+  -t myapi:amd64 \
   .

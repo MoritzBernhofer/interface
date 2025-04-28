@@ -1,16 +1,13 @@
-﻿# ---- 1) runtime image ----
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 5000
 EXPOSE 5001
 
-# ---- 2) build image ----
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# copy your Protos folder exactly where the .csproj expects it
 COPY Protos/                    Protos/
 
 # copy only the project file first (to leverage layer caching)
