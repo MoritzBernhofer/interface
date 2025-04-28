@@ -8,26 +8,24 @@ CONTAINER_NAME="myapi_container"
 DOCKERFILE="Dockerfile"
 HOST_PORTS=(5000 5001)
 
-# 1) Remove any existing builder
+# 1) Tear down any old builder
 docker buildx rm "$BUILDER_NAME" 2>/dev/null || true
 
-# 2) Create a new Buildx builder using the native overlayfs snapshotter
+# 2) Create a new Buildx builder using the 'docker' driver (in-daemon, privileged)
 docker buildx create \
   --name "$BUILDER_NAME" \
-  --driver docker-container \
-  --driver-opt network=host \
-  --buildkitd-flags '--oci-worker-snapshotter=native' \
+  --driver docker \
   --use
 
-# 3) Bootstrap the builder (sets up QEMU emulation)
+# 3) (Optional) inspect & bootstrap to ensure it's ready
 docker buildx inspect "$BUILDER_NAME" --bootstrap
 
 # 4) Build & load the amd64 image
 docker buildx build \
   --platform linux/amd64 \
   --load \
-  --file "$DOCKERFILE" \
-  --tag "$IMAGE_NAME" \
+  -f "$DOCKERFILE" \
+  -t "$IMAGE_NAME" \
   .
 
 # 5) Remove any old container and run the new one
