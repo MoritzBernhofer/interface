@@ -1,15 +1,16 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client;
 using GrpcReverse;
+using static GrpcReverse.Dispatcher;
 
 var channel = GrpcChannel.ForAddress("http://localhost:5001", new GrpcChannelOptions
 {
     HttpHandler = new HttpClientHandler()
 });
 
-var client = new Dispatcher.DispatcherClient(channel);
+var client = new DispatcherClient(channel);
 
-using var call = client.Register();
+var call = client.Register();
 
 var responseReader = Task.Run(async () =>
 {

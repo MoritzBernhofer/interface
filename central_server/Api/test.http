@@ -1,0 +1,25 @@
+### Create a new report
+POST https://www.felixitron.at/api/report
+Content-Type: application/json
+
+{
+  "level_id": "118024779",
+  "reporter": "felixitron",
+  "reason": "adde nicht die required parameter to the requesttt"
+}
+
+### Get all users
+GET https://www.felixitron.at/api/user
+Accept: application/json
+
+@username = felixitron
+
+### Fetch all levels for author
+GET https://www.felixitron.at/api/level/byUser/felixitron
+Accept: application/json
+
+> {%
+    // parse the JSON response and map to each level’s id
+    const levels = JSON.parse(response.body);
+    levels.map(l => l.id);
+%}

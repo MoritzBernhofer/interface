@@ -20,15 +20,9 @@ builder.Services.AddDbContext<AppDataContext>(options =>
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenLocalhost(5000, o =>
-    {
-        o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1;
-    });
+    options.ListenLocalhost(5000, o => { o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1; });
 
-    options.ListenLocalhost(5001, o =>
-    {
-        o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
-    });
+    options.ListenLocalhost(5001, o => { o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2; });
 });
 
 var app = builder.Build();
@@ -42,5 +36,7 @@ app.MapGet("/test", async () =>
     await DispatcherService.BroadcastMessageAsync(content);
     return Results.Ok($"Broadcasted: {content}");
 });
+
+app.MapGet("/", () => "Server online");
 
 app.Run();
