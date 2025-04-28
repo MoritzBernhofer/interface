@@ -1,29 +1,41 @@
-﻿#!/usr/bin/env bash
-set -euo pipefail
+﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+USER $APP_UID
+WORKDIR /app
+EXPOSE 5000
+EXPOSE 5001
 
-# --- configuration ---
-IMAGE_NAME="myapi:arm64"
-CONTAINER_NAME="myapi_container"
-DOCKERFILE="Dockerfile"
-HOST_PORTS=(5000 5001)
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
 
-# 1) Build the ARM64 image natively
-docker build \
-  --pull \
-  --file "$DOCKERFILE" \
-  --tag "$IMAGE_NAME" \
-  .
+COPY Protos/                    Protos/
 
-# 2) Remove any old container
-docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
+# copy only the project file first (to leverage layer caching)
+COPY central_server/Api/Api.csproj  central_server/Api/
 
-# 3) Map each exposed port and run
-PORT_FLAGS=()
-for p in "${HOST_PORTS[@]}"; do
-  PORT_FLAGS+=( -p "${p}:${p}" )
-done
+# restore via the original path inside the container
+RUN dotnet restore central_server/Api/Api.csproj
 
-docker run -d --name "$CONTAINER_NAME" "${PORT_FLAGS[@]}" "$IMAGE_NAME"
+# now bring in the rest of your API code
+COPY central_server/Api/.       central_server/Api/
 
-echo "✅ Built and running container '$CONTAINER_NAME' (image: $IMAGE_NAME)"
-echo "   Ports exposed: ${HOST_PORTS[*]}"
+# build using the full path
+RUN dotnet build central_server/Api/Api.csproj \
+    -c $BUILD_CONFIGURATION \
+    -o /app/build
+
+
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+
+RUN dotnet publish central_server/Api/Api.csproj \
+    -c $BUILD_CONFIGURATION \
+    -o /app/publish \
+    /p:UseAppHost=false
+
+# ---- 4) final image ----
+FROM base AS final
+WORKDIR /app
+
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Api.dll"]
