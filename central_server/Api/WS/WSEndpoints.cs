@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using System.Text;
 using central_server.Services.WS;
 
 namespace central_server.WS;
@@ -13,37 +14,45 @@ public static class WSEndpoints
 
     private static async Task HandleRegisterWSClient(
         HttpContext        context,
-        WSClientService    wsClientService,
+        WSClientService    svc,
         CancellationToken  ct = default)
     {
         if (!context.WebSockets.IsWebSocketRequest)
         {
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
-            await context.Response.WriteAsync("Expected a WebSocket upgrade.", ct);
+            await context.Response.WriteAsync("Expected WebSocket upgrade.", ct);
             return;
         }
 
         using var socket = await context.WebSockets.AcceptWebSocketAsync();
-        var id = Guid.NewGuid();
-        wsClientService.Add(socket);
 
-        var buffer = new byte[4 * 1024];
+        var id = context.Request.Query["id"].FirstOrDefault();
+        var isNew = string.IsNullOrWhiteSpace(id);
+        if (isNew) id = Guid.NewGuid().ToString();
 
+        svc.AddOrUpdate(socket, id);
+
+        if (isNew && socket.State == WebSocketState.Open)
+        {
+            var bytes = Encoding.UTF8.GetBytes($"CLIENT_ID:{id}");
+            await socket.SendAsync(bytes, WebSocketMessageType.Text, true, ct);
+        }
+
+        var buf = new byte[4 * 1024];
         try
         {
             while (!ct.IsCancellationRequested && socket.State == WebSocketState.Open)
             {
-                var result = await socket.ReceiveAsync(buffer, ct);
-
-                if (result.MessageType == WebSocketMessageType.Close)
-                    break;
+                var res = await socket.ReceiveAsync(buf, ct);
+                if (res.MessageType == WebSocketMessageType.Close) break;
             }
         }
         finally
         {
-            await wsClientService.RemoveAsync(id);
-            if (socket.State != WebSocketState.Closed)
-                await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Server shutdown", ct);
+            await svc.RemoveAsync(id);
+            if (socket.State == WebSocketState.Open)
+                await socket.CloseAsync(WebSocketCloseStatus.NormalClosure,
+                    "Server shutdown", CancellationToken.None);
         }
     }
 }

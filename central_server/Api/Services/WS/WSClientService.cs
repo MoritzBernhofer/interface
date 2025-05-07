@@ -4,40 +4,54 @@ using System.Text;
 
 namespace central_server.Services.WS;
 
+/// <summary>
+/// Thread‑safe registry of every WebSocket that is currently connected to the server,
+/// keyed by a *string* ID (either supplied by the client or auto‑generated).
+/// </summary>
 public class WSClientService
 {
-    private readonly ConcurrentDictionary<Guid, WebSocket> _sockets = new();
+    private readonly ConcurrentDictionary<string, WebSocket> _sockets = new();
+
+    /// <summary>All client IDs that are still online.</summary>
+    public IEnumerable<string> ConnectedIds => _sockets.Keys;
 
 
-    public IEnumerable<Guid> ConnectedIds => _sockets.Keys;
 
-
-    public Guid Add(WebSocket socket)
+    /// <summary>
+    /// Register a socket under the given <paramref name="id"/> or, if
+    /// <c>null/empty</c>, create a new GUID and return it.
+    /// </summary>
+    public string AddOrUpdate(WebSocket socket, string id = null)
     {
-        var id = Guid.NewGuid();
         _sockets[id] = socket;
         return id;
     }
 
-    public async Task<bool> RemoveAsync(Guid id, bool closeIfOpen = true)
+    /// <summary>
+    /// Remove a socket from the store (optionally closing it first).
+    /// </summary>
+    public async Task<bool> RemoveAsync(string id, bool closeIfOpen = true)
     {
         if (!_sockets.TryRemove(id, out var socket))
             return false;
 
         if (closeIfOpen && socket.State == WebSocketState.Open)
         {
-            await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Server closing", CancellationToken.None);
+            await socket.CloseAsync(WebSocketCloseStatus.NormalClosure,
+                                     "Server closing",
+                                     CancellationToken.None);
         }
         return true;
     }
 
-    public async Task<bool> SendToAsync(Guid id, string message, CancellationToken ct = default)
+
+    public async Task<bool> SendToAsync(string id, string message, CancellationToken ct = default)
     {
         if (!_sockets.TryGetValue(id, out var socket) || socket.State != WebSocketState.Open)
             return false;
 
         var bytes = Encoding.UTF8.GetBytes(message);
-        await socket.SendAsync(bytes, WebSocketMessageType.Text, true, ct);
+        await socket.SendAsync(bytes, WebSocketMessageType.Text, endOfMessage: true, ct);
         return true;
     }
 
