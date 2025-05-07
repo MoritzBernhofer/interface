@@ -1,7 +1,7 @@
 ﻿using System.Net.WebSockets;
 using System.Text;
 
-const string WS_BASE = "ws://localhost:5000/ws";
+const string WS_BASE = "ws://91.142.26.98:5000/ws";
 const string ID_FILE = "client-id.txt";
 
 string? clientId = File.Exists(ID_FILE) ? await File.ReadAllTextAsync(ID_FILE) : null;
