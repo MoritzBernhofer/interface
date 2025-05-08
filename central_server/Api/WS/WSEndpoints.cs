@@ -13,9 +13,10 @@ public static class WSEndpoints
     }
 
     private static async Task HandleRegisterWSClient(
-        HttpContext        context,
-        WSClientService    svc,
-        CancellationToken  ct = default)
+        HttpContext context,
+        WSClientService svc,
+        ILogger<WSClientService> logger,
+        CancellationToken ct = default)
     {
         if (!context.WebSockets.IsWebSocketRequest)
         {
@@ -28,9 +29,13 @@ public static class WSEndpoints
 
         var id = context.Request.Query["id"].FirstOrDefault();
         var isNew = string.IsNullOrWhiteSpace(id);
-        if (isNew) id = Guid.NewGuid().ToString();
+        if (isNew)
+        {
+            id = Guid.NewGuid().ToString();
+            logger.LogInformation("New WS client with id: {ID}", id);
+        }
 
-        svc.AddOrUpdate(socket, id);
+        svc.AddOrUpdate(socket, id!);
 
         if (isNew && socket.State == WebSocketState.Open)
         {
@@ -49,7 +54,7 @@ public static class WSEndpoints
         }
         finally
         {
-            await svc.RemoveAsync(id);
+            await svc.RemoveAsync(id!);
             if (socket.State == WebSocketState.Open)
                 await socket.CloseAsync(WebSocketCloseStatus.NormalClosure,
                     "Server shutdown", CancellationToken.None);

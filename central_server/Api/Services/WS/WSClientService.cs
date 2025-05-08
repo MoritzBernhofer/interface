@@ -8,7 +8,7 @@ namespace central_server.Services.WS;
 /// Thread‑safe registry of every WebSocket that is currently connected to the server,
 /// keyed by a *string* ID (either supplied by the client or auto‑generated).
 /// </summary>
-public class WSClientService
+public class WSClientService(ILogger<WSClientService> logger)
 {
     private readonly ConcurrentDictionary<string, WebSocket> _sockets = new();
 
@@ -21,8 +21,9 @@ public class WSClientService
     /// Register a socket under the given <paramref name="id"/> or, if
     /// <c>null/empty</c>, create a new GUID and return it.
     /// </summary>
-    public string AddOrUpdate(WebSocket socket, string id = null)
+    public string AddOrUpdate(WebSocket socket, string id)
     {
+        logger.LogInformation("Connected socked with id: {ID}", id);
         _sockets[id] = socket;
         return id;
     }
@@ -30,10 +31,9 @@ public class WSClientService
     /// <summary>
     /// Remove a socket from the store (optionally closing it first).
     /// </summary>
-    public async Task<bool> RemoveAsync(string id, bool closeIfOpen = true)
+    public async Task RemoveAsync(string id, bool closeIfOpen = true)
     {
-        if (!_sockets.TryRemove(id, out var socket))
-            return false;
+        if (!_sockets.TryRemove(id, out var socket)) return;
 
         if (closeIfOpen && socket.State == WebSocketState.Open)
         {
@@ -41,7 +41,7 @@ public class WSClientService
                                      "Server closing",
                                      CancellationToken.None);
         }
-        return true;
+        logger.LogInformation("Disconnected socked with id: {ID}", id);
     }
 
 
@@ -61,9 +61,9 @@ public class WSClientService
 
         var tasks = _sockets.Values
                             .Where(s => s.State == WebSocketState.Open)
-                            .Select(s => s.SendAsync(bytes, WebSocketMessageType.Text, true, ct));
+                            .Select(s => s.SendAsync(bytes, WebSocketMessageType.Text, true, ct)).ToList();
 
         await Task.WhenAll(tasks);
-        return tasks.Count();
+        return tasks.Count;
     }
 }
