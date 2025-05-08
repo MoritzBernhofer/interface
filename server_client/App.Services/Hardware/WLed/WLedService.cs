@@ -1,4 +1,4 @@
-﻿namespace Api.Services;
+﻿namespace Api.Services.Hardware;
 
 public class WLedService(HttpClient httpClient)
 {
