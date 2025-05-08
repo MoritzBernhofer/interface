@@ -60,7 +60,7 @@ public static class WSEndpoints
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "Unexpected error in WebSocket receive loop for client {ID}", id);
+                    logger.LogError("Unexpected error in WebSocket receive loop for client {ID}", id);
                     break;
                 }
             }
