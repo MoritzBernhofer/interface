@@ -48,16 +48,39 @@ public static class WSEndpoints
         {
             while (!ct.IsCancellationRequested && socket.State == WebSocketState.Open)
             {
-                var res = await socket.ReceiveAsync(buf, ct);
-                if (res.MessageType == WebSocketMessageType.Close) break;
+                try
+                {
+                    var res = await socket.ReceiveAsync(buf, ct);
+                    if (res.MessageType == WebSocketMessageType.Close) break;
+                }
+                catch (WebSocketException wsex) when (wsex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
+                {
+                    logger.LogWarning("Client {ID} closed connection without proper close handshake", id);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Unexpected error in WebSocket receive loop for client {ID}", id);
+                    break;
+                }
             }
         }
         finally
         {
             await svc.RemoveAsync(id!);
             if (socket.State == WebSocketState.Open)
-                await socket.CloseAsync(WebSocketCloseStatus.NormalClosure,
-                    "Server shutdown", CancellationToken.None);
+            {
+                try
+                {
+                    await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Server shutdown", CancellationToken.None);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Error while closing WebSocket for client {ID}", id);
+                }
+            }
+
+            logger.LogInformation("Disconnected socket with id: {ID}", id);
         }
     }
 }
