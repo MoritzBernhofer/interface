@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 
 //services
 var services = new ServiceCollection();
+
+services.AddSingleton<HttpClient>();
+
 //Websocket services
 services.AddSingleton<RequestServiceHandler>();
 services.AddSingleton<WebSocketService>();
