@@ -1,0 +1,11 @@
+@host = http://91.142.26.98:5000/sendMessage
+
+### Sende Nachricht an WS-Client
+POST {{host}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "Id": "04c566a2-2fe4-4665-8cb0-e47f49a36d02",
+  "Message": "Yooo"
+}
