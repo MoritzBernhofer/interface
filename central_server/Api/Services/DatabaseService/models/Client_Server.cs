@@ -1,9 +1,7 @@
 namespace central_server.Services.DatabaseService.models;
 
-public class IotDevice
+public class ClientServer
 {
     public long Id { get; set; }
-    public required string Ipv4 { get; set; }
-    public required long IotServiceId { get; set; }
     public required string Name { get; set; }
 }

@@ -1,12 +1,10 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace central_server.Services.DatabaseService.models;
 
-public class User(string username, string password)
+public class User
 {
-    [Key] public int Id { get; set; }
-
-    [MaxLength(255)] public required string Username { get; set; } = username;
-
-    [MaxLength(25556)] public required string Password { get; set; } = password;
+    public long Id { get; set; }
+    public required string Name { get; set; }
+    public required string Email { get; set; }
+    public required string Password { get; set; }
+    public List<ClientServer> ClientServers { get; set; } = [];
 }
