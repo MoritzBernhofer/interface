@@ -3,14 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using central_server.Services.DatabaseService;
+using central_server.Database;
 
 #nullable disable
 
 namespace central_server.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    [Migration("20260123193630_Initial")]
+    [Migration("20260123203425_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -19,7 +19,7 @@ namespace central_server.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.3");
 
-            modelBuilder.Entity("central_server.Services.DatabaseService.models.ClientServer", b =>
+            modelBuilder.Entity("central_server.Database.models.ClientServer", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -39,7 +39,7 @@ namespace central_server.Migrations
                     b.ToTable("ClientServers");
                 });
 
-            modelBuilder.Entity("central_server.Services.DatabaseService.models.IotDevice", b =>
+            modelBuilder.Entity("central_server.Database.models.IotDevice", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,7 +61,7 @@ namespace central_server.Migrations
                     b.ToTable("IotDevices");
                 });
 
-            modelBuilder.Entity("central_server.Services.DatabaseService.models.IotDeviceLog", b =>
+            modelBuilder.Entity("central_server.Database.models.IotDeviceLog", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,7 +82,7 @@ namespace central_server.Migrations
                     b.ToTable("IotDeviceLogs");
                 });
 
-            modelBuilder.Entity("central_server.Services.DatabaseService.models.IotService", b =>
+            modelBuilder.Entity("central_server.Database.models.IotService", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -97,7 +97,7 @@ namespace central_server.Migrations
                     b.ToTable("IotServices");
                 });
 
-            modelBuilder.Entity("central_server.Services.DatabaseService.models.User", b =>
+            modelBuilder.Entity("central_server.Database.models.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,7 +120,7 @@ namespace central_server.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("central_server.Services.DatabaseService.models.UserLog", b =>
+            modelBuilder.Entity("central_server.Database.models.UserLog", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -141,14 +141,14 @@ namespace central_server.Migrations
                     b.ToTable("UserLogs");
                 });
 
-            modelBuilder.Entity("central_server.Services.DatabaseService.models.ClientServer", b =>
+            modelBuilder.Entity("central_server.Database.models.ClientServer", b =>
                 {
-                    b.HasOne("central_server.Services.DatabaseService.models.User", null)
+                    b.HasOne("central_server.Database.models.User", null)
                         .WithMany("ClientServers")
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("central_server.Services.DatabaseService.models.User", b =>
+            modelBuilder.Entity("central_server.Database.models.User", b =>
                 {
                     b.Navigation("ClientServers");
                 });

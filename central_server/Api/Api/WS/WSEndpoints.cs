@@ -1,14 +1,14 @@
 namespace central_server.Api.WS;
 
-public static class WSEndpoints
+public static class WsEndpoints
 {
-    public static void MapWSEndpoints(this WebApplication app)
+    public static void MapWsEndpoints(this WebApplication app)
     {
-        app.MapGet("/wsclient", GetWSClients.HandleGetWSClients)
+        app.MapGet("/wsclient", GetWsClients.HandleGetWsClients)
             .WithName("GetWSClients")
             .Produces<List<string>>();
 
-        app.MapPost("/sendMessage", SendMessageToWSClient.HandleSendMessageToWSClient)
+        app.MapPost("/sendMessage", SendMessageToWsClient.HandleSendMessageToWsClient)
             .WithName("SendMessageToWSClient")
             .Produces<bool>();
     }

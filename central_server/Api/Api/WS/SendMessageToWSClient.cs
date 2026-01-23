@@ -2,9 +2,9 @@ using central_server.Services.WS;
 
 namespace central_server.Api.WS;
 
-public static class SendMessageToWSClient
+public static class SendMessageToWsClient
 {
-    public static async Task<bool> HandleSendMessageToWSClient(SendMessageDto sendMessageDto, WSClientService wsClientService)
+    public static async Task<bool> HandleSendMessageToWsClient(SendMessageDto sendMessageDto, WsClientService wsClientService)
     {
         return await wsClientService.SendToAsync(sendMessageDto.Id, sendMessageDto.Message);
     }

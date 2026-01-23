@@ -1,8 +1,4 @@
 ﻿using Api.Services;
-using Api.Services.Handler;
-using Api.Services.Handler.Hardware.WLed;
-using Api.Services.Handler.Logic.Info;
-using Api.Services.Websocket;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -10,16 +6,8 @@ using Microsoft.Extensions.Logging;
 var services = new ServiceCollection();
 
 services.AddSingleton<HttpClient>();
-services.AddSingleton<RequestServiceHandler>();
-
 //Websocket services
 services.AddSingleton<WebSocketService>();
-
-//Hardware services
-services.AddSingleton<WLedService>();
-
-//Logic services
-services.AddSingleton<InfoService>();
 
 
 services.AddLogging(configure => configure.AddConsole());

@@ -1,4 +1,4 @@
-namespace central_server.Services.DatabaseService.models;
+namespace central_server.Database.models;
 
 public class IotDevice
 {

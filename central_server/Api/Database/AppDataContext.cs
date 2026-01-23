@@ -1,7 +1,7 @@
-using central_server.Services.DatabaseService.models;
+using central_server.Database.models;
 using Microsoft.EntityFrameworkCore;
 
-namespace central_server.Services.DatabaseService;
+namespace central_server.Database;
 
 public class AppDataContext(DbContextOptions<AppDataContext> options) : DbContext(options)
 {

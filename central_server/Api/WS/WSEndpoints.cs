@@ -9,13 +9,13 @@ public static class WSEndpoints
     public static void MapWebsocket(this WebApplication app)
     {
         app.UseWebSockets();
-        app.Map("/ws", HandleRegisterWSClient);
+        app.Map("/ws", HandleRegisterWsClient);
     }
 
-    private static async Task HandleRegisterWSClient(
+    private static async Task HandleRegisterWsClient(
         HttpContext context,
-        WSClientService svc,
-        ILogger<WSClientService> logger,
+        WsClientService svc,
+        ILogger<WsClientService> logger,
         CancellationToken ct = default)
     {
         if (!context.WebSockets.IsWebSocketRequest)

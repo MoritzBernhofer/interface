@@ -1,12 +1,11 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using Api.Services.Handler;
 using Microsoft.Extensions.Logging;
 
-namespace Api.Services.Websocket;
+namespace Api.Services;
 
-public class WebSocketService(RequestServiceHandler serviceHandler, ILogger<WebSocketService> logger)
+public class WebSocketService(ILogger<WebSocketService> logger)
 {
     public async Task StartAsync(string uri, bool expectWelcome, string idFile, CancellationToken appCt)
     {
@@ -30,11 +29,11 @@ public class WebSocketService(RequestServiceHandler serviceHandler, ILogger<WebS
                     var res = await ws.ReceiveAsync(buf, appCt);
                     if (res.MessageType == WebSocketMessageType.Close) break;
 
-                    var msg = Encoding.UTF8.GetString(buf, 0, res.Count);
+                    var content = Encoding.UTF8.GetString(buf, 0, res.Count);
 
-                    if (expectWelcome && msg.StartsWith("CLIENT_ID:"))
+                    if (expectWelcome && content.StartsWith("CLIENT_ID:"))
                     {
-                        var id = msg["CLIENT_ID:".Length..];
+                        var id = content["CLIENT_ID:".Length..];
                         await File.WriteAllTextAsync(idFile, id, appCt);
                         logger.LogInformation("assigned id = {ID} (saved to {IDFile})", id, idFile);
                         expectWelcome = false;
@@ -43,16 +42,18 @@ public class WebSocketService(RequestServiceHandler serviceHandler, ILogger<WebS
 
                     try
                     {
-                        var typedMsg = JsonSerializer.Deserialize<RequestDto>(msg);
-                        await serviceHandler.Handle(typedMsg);
+                        await MessageHandler.Handle(content);
                     }
                     catch (JsonException ex)
                     {
-                        logger.LogWarning(ex, "Failed to deserialize message: {Message}", msg);
+                        logger.LogWarning(ex, "Failed to deserialize message: {Message}", content);
                     }
                 }
             }
-            catch (OperationCanceledException) when (appCt.IsCancellationRequested) { break; }
+            catch (OperationCanceledException) when (appCt.IsCancellationRequested)
+            {
+                break;
+            }
             catch (Exception ex)
             {
                 logger.LogWarning(ex.Message);
@@ -60,7 +61,15 @@ public class WebSocketService(RequestServiceHandler serviceHandler, ILogger<WebS
 
             if (appCt.IsCancellationRequested) break;
             logger.LogInformation($"retrying in {backoff.TotalSeconds}s …");
-            try { await Task.Delay(backoff, appCt); } catch (OperationCanceledException) { break; }
+            try
+            {
+                await Task.Delay(backoff, appCt);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+
             backoff = TimeSpan.FromSeconds(Math.Min(backoff.TotalSeconds * 2, 30));
         }
     }
