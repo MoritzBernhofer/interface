@@ -30,6 +30,19 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddDbContext<AppDataContext>(options =>
     options.UseSqlite(connectionString));
 
+const string origins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(origins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -62,5 +75,6 @@ app.MapIotDeviceLogEndpoints();
 app.MapIotServiceEndpoints();
 app.MapUserEndpoints();
 app.MapUserLogEndpoints();
+app.UseCors(origins);
 
 app.Run();
