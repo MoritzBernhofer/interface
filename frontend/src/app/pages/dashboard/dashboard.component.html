@@ -1,0 +1,185 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <div class="header-left">
+      <h1>IoT Interface</h1>
+    </div>
+    <div class="header-right">
+      @if (user()) {
+        <span class="user-name">{{ user()?.name }}</span>
+      }
+      <button class="logout-btn" (click)="logout()">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="dashboard-content">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Explorer</span>
+      </div>
+      
+      @if (isLoading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <span>Loading...</span>
+        </div>
+      } @else {
+        <div class="tree-view">
+          @for (node of serverNodes(); track node.server.id; let i = $index) {
+            <div class="tree-node">
+              <div 
+                class="tree-item server-item"
+                [class.selected]="isServerSelected(node.server.id)"
+                (click)="selectServer(node.server)"
+              >
+                <button class="expand-btn" (click)="toggleServer(i); $event.stopPropagation()">
+                  <span class="chevron" [class.expanded]="node.expanded">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                    </svg>
+                  </span>
+                </button>
+                <span class="icon server-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4 1h16c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2zm0 8h16c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2zm0 8h16c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2zm2-12v2h2V5H6zm0 8v2h2v-2H6zm0 8v2h2v-2H6z"/>
+                  </svg>
+                </span>
+                <span class="name">{{ node.server.name }}</span>
+                <span class="badge">{{ node.devices.length }}</span>
+              </div>
+
+              @if (node.expanded) {
+                <div class="tree-children">
+                  @for (device of node.devices; track device.id) {
+                    <div 
+                      class="tree-item device-item"
+                      [class.selected]="isDeviceSelected(device.id)"
+                      (click)="selectDevice(device)"
+                    >
+                      <span class="icon device-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+                        </svg>
+                      </span>
+                      <span class="name">{{ device.name }}</span>
+                    </div>
+                  }
+                  @if (node.devices.length === 0) {
+                    <div class="tree-item empty-item">
+                      <span class="empty-text">No devices</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (serverNodes().length === 0) {
+            <div class="empty-state">
+              <span>No servers found</span>
+            </div>
+          }
+        </div>
+      }
+    </aside>
+
+    <main class="detail-panel">
+      @if (selectedItem()) {
+        @if (selectedItem()?.type === 'server') {
+          <div class="detail-view">
+            <div class="detail-header">
+              <span class="detail-icon server-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M4 1h16c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2zm0 8h16c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2zm0 8h16c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2zm2-12v2h2V5H6zm0 8v2h2v-2H6zm0 8v2h2v-2H6z"/>
+                </svg>
+              </span>
+              <h2>{{ selectedItem()?.data?.name }}</h2>
+            </div>
+            
+            <div class="detail-content">
+              <div class="info-grid">
+                <div class="info-card">
+                  <span class="info-label">ID</span>
+                  <span class="info-value">{{ selectedItem()?.data?.id }}</span>
+                </div>
+                <div class="info-card">
+                  <span class="info-label">Name</span>
+                  <span class="info-value">{{ selectedItem()?.data?.name }}</span>
+                </div>
+                <div class="info-card">
+                  <span class="info-label">Connected Devices</span>
+                  <span class="info-value">{{ getDevicesForServer(selectedItem()?.data?.id || 0).length }}</span>
+                </div>
+              </div>
+
+              <div class="section">
+                <h3>Connected Devices</h3>
+                <div class="devices-list">
+                  @for (device of getDevicesForServer(selectedItem()?.data?.id || 0); track device.id) {
+                    <div class="device-card" (click)="selectDevice(device)">
+                      <span class="device-card-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+                        </svg>
+                      </span>
+                      <div class="device-card-info">
+                        <span class="device-card-name">{{ device.name }}</span>
+                        <span class="device-card-ip">{{ device.ipv4 }}</span>
+                      </div>
+                    </div>
+                  }
+                  @if (getDevicesForServer(selectedItem()?.data?.id || 0).length === 0) {
+                    <div class="empty-devices">No devices connected to this server</div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="detail-view">
+            <div class="detail-header">
+              <span class="detail-icon device-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+                </svg>
+              </span>
+              <h2>{{ selectedItem()?.data?.name }}</h2>
+            </div>
+            
+            <div class="detail-content">
+              <div class="info-grid">
+                <div class="info-card">
+                  <span class="info-label">ID</span>
+                  <span class="info-value">{{ selectedItem()?.data?.id }}</span>
+                </div>
+                <div class="info-card">
+                  <span class="info-label">Name</span>
+                  <span class="info-value">{{ selectedItem()?.data?.name }}</span>
+                </div>
+                <div class="info-card">
+                  <span class="info-label">IPv4 Address</span>
+                  <span class="info-value code">{{ $any(selectedItem()?.data)?.ipv4 }}</span>
+                </div>
+                <div class="info-card">
+                  <span class="info-label">Service ID</span>
+                  <span class="info-value">{{ $any(selectedItem()?.data)?.iotServiceId }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="empty-detail">
+          <div class="empty-detail-content">
+            <span class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+              </svg>
+            </span>
+            <h3>Select an item</h3>
+            <p>Choose a server or device from the sidebar to view details</p>
+          </div>
+        </div>
+      }
+    </main>
+  </div>
+</div>

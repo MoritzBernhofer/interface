@@ -1,0 +1,108 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>IoT Interface</h1>
+      <p>{{ isLoginMode() ? 'Sign in to your account' : 'Create a new account' }}</p>
+    </div>
+
+    @if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    }
+
+    @if (isLoginMode()) {
+      <form (ngSubmit)="onLogin()" class="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="loginEmail"
+            name="email"
+            placeholder="Enter your email"
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            [(ngModel)]="loginPassword"
+            name="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="isLoading()">
+          {{ isLoading() ? 'Signing in...' : 'Sign In' }}
+        </button>
+      </form>
+    } @else {
+      <form (ngSubmit)="onRegister()" class="login-form">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input
+            type="text"
+            id="name"
+            [(ngModel)]="registerName"
+            name="name"
+            placeholder="Enter your name"
+            autocomplete="name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="reg-email">Email</label>
+          <input
+            type="email"
+            id="reg-email"
+            [(ngModel)]="registerEmail"
+            name="email"
+            placeholder="Enter your email"
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input
+            type="password"
+            id="reg-password"
+            [(ngModel)]="registerPassword"
+            name="password"
+            placeholder="Create a password"
+            autocomplete="new-password"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label>
+          <input
+            type="password"
+            id="confirm-password"
+            [(ngModel)]="registerConfirmPassword"
+            name="confirmPassword"
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+          />
+        </div>
+
+        <button type="submit" class="submit-btn" [disabled]="isLoading()">
+          {{ isLoading() ? 'Creating account...' : 'Create Account' }}
+        </button>
+      </form>
+    }
+
+    <div class="toggle-mode">
+      @if (isLoginMode()) {
+        <span>Don't have an account?</span>
+        <button type="button" (click)="toggleMode()">Create one</button>
+      } @else {
+        <span>Already have an account?</span>
+        <button type="button" (click)="toggleMode()">Sign in</button>
+      }
+    </div>
+  </div>
+</div>

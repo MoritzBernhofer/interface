@@ -18,9 +18,6 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Console.WriteLine(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty));
-
-//env
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false);
@@ -65,6 +62,5 @@ app.MapIotDeviceLogEndpoints();
 app.MapIotServiceEndpoints();
 app.MapUserEndpoints();
 app.MapUserLogEndpoints();
-app.MapGet("/", () => "Server online");
 
 app.Run();
