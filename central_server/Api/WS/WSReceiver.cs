@@ -1,9 +1,11 @@
+using central_server.Logging;
+
 namespace central_server.WS;
 
-public class WSReceiver
+public class WsReceiver(CLogger logger)
 {
     public void Handle(string content)
     {
-        Console.WriteLine(content);
+        logger.LogInformation("Received WsReceiver " + content);
     }
 }

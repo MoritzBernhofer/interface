@@ -8,6 +8,7 @@ using central_server.Api.User;
 using central_server.Api.UserLog;
 using central_server.Api.WS;
 using central_server.Database;
+using central_server.Logging;
 using central_server.Services.Auth;
 using central_server.Services.WS;
 using central_server.WS;
@@ -25,7 +26,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 //services
 builder.Services.AddSingleton<WsClientService>();
-builder.Services.AddSingleton<WSReceiver>();
+builder.Services.AddSingleton<WsReceiver>();
+builder.Services.AddSingleton<CLogger>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddDbContext<AppDataContext>(options =>

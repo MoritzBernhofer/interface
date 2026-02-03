@@ -16,7 +16,7 @@ public static class WSEndpoints
         HttpContext context,
         WsClientService svc,
         ILogger<WsClientService> logger,
-        WSReceiver handler,
+        WsReceiver handler,
         CancellationToken ct = default)
     {
         if (!context.WebSockets.IsWebSocketRequest)
