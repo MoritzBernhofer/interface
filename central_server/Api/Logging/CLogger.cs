@@ -1,14 +1,14 @@
 namespace central_server.Logging;
 
-public class CLogger
+public class CLogger(ILogger<CLogger> logger)
 {
     public void LogInformation(string message)
     {
-        Console.WriteLine(message);
+        logger.LogInformation(message);
     }
 
     public void LogError(string message)
     {
-        Console.WriteLine(message);
+        logger.LogInformation(message);
     }
 }

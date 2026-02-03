@@ -4,7 +4,7 @@ using central_server.Services.WS;
 
 namespace central_server.WS;
 
-public static class WSEndpoints
+public static class WsEndpoints
 {
     public static void MapWebsocket(this WebApplication app)
     {
