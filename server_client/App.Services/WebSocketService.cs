@@ -7,6 +7,37 @@ namespace Api.Services;
 
 public class WebSocketService(ILogger<WebSocketService> logger)
 {
+    private ClientWebSocket? _ws;
+    private readonly SemaphoreSlim _sendLock = new(1, 1);
+
+    public bool IsConnected => _ws?.State == WebSocketState.Open;
+
+    public async Task SendAsync(string message, CancellationToken ct = default)
+    {
+        if (_ws?.State != WebSocketState.Open)
+        {
+            throw new InvalidOperationException("WebSocket is not connected");
+        }
+
+        var bytes = Encoding.UTF8.GetBytes(message);
+        await _sendLock.WaitAsync(ct);
+        try
+        {
+            await _ws.SendAsync(bytes, WebSocketMessageType.Text, true, ct);
+            logger.LogInformation("Sent message: {Message}", message);
+        }
+        finally
+        {
+            _sendLock.Release();
+        }
+    }
+
+    public async Task SendJsonAsync<T>(T data, CancellationToken ct = default)
+    {
+        var json = JsonSerializer.Serialize(data);
+        await SendAsync(json, ct);
+    }
+
     public async Task StartAsync(string uri, bool expectWelcome, string idFile, CancellationToken appCt)
     {
         var backoff = TimeSpan.FromSeconds(1);
@@ -14,19 +45,19 @@ public class WebSocketService(ILogger<WebSocketService> logger)
 
         while (!appCt.IsCancellationRequested)
         {
-            using var ws = new ClientWebSocket();
+            _ws = new ClientWebSocket();
 
             try
             {
-                logger.LogInformation("connecting to {Uri} …", uri);
-                await ws.ConnectAsync(new Uri(uri), appCt);
-                logger.LogInformation("connected ✔");
+                logger.LogInformation("connecting to {Uri} ...", uri);
+                await _ws.ConnectAsync(new Uri(uri), appCt);
+                logger.LogInformation("connected");
 
                 backoff = TimeSpan.FromSeconds(1);
 
-                while (ws.State == WebSocketState.Open && !appCt.IsCancellationRequested)
+                while (_ws.State == WebSocketState.Open && !appCt.IsCancellationRequested)
                 {
-                    var res = await ws.ReceiveAsync(buf, appCt);
+                    var res = await _ws.ReceiveAsync(buf, appCt);
                     if (res.MessageType == WebSocketMessageType.Close) break;
 
                     var content = Encoding.UTF8.GetString(buf, 0, res.Count);

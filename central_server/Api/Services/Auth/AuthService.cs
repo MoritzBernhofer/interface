@@ -1,26 +1,18 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using central_server.Database.models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace central_server.Services.Auth;
 
 public record AuthToken(long UserId, string Email, string Name);
 
-public class AuthService
+public class AuthService(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
 {
-    private readonly IConfiguration _configuration;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public AuthService(IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
-    {
-        _configuration = configuration;
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     public AuthToken? GetCurrentUser()
     {
-        var context = _httpContextAccessor.HttpContext;
+        var context = httpContextAccessor.HttpContext;
         if (context?.User.Identity?.IsAuthenticated != true)
             return null;
 
@@ -34,10 +26,10 @@ public class AuthService
         return new AuthToken(userId, emailClaim ?? "", nameClaim ?? "");
     }
 
-    public string GenerateToken(Database.models.User user)
+    public string GenerateToken(User user)
     {
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -47,10 +39,10 @@ public class AuthService
             new Claim(ClaimTypes.Name, user.Name)
         };
 
-        var expirationMinutes = int.Parse(_configuration["Jwt:ExpirationMinutes"] ?? "60");
+        var expirationMinutes = int.Parse(configuration["Jwt:ExpirationMinutes"] ?? "60");
         var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
+            issuer: configuration["Jwt:Issuer"],
+            audience: configuration["Jwt:Audience"],
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
             signingCredentials: credentials);

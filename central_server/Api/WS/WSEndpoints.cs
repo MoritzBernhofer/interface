@@ -16,6 +16,7 @@ public static class WSEndpoints
         HttpContext context,
         WsClientService svc,
         ILogger<WsClientService> logger,
+        WSReceiver handler,
         CancellationToken ct = default)
     {
         if (!context.WebSockets.IsWebSocketRequest)
@@ -52,6 +53,10 @@ public static class WSEndpoints
                 {
                     var res = await socket.ReceiveAsync(buf, ct);
                     if (res.MessageType == WebSocketMessageType.Close) break;
+                    
+                    var content = Encoding.UTF8.GetString(buf, 0, res.Count);
+                    
+                    handler.Handle(content);
                 }
                 catch (WebSocketException wsex) when (wsex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
                 {

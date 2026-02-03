@@ -1,27 +1,40 @@
-﻿using Api.Services;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Api.Services;
+using App.Api;
 
-//services
-var services = new ServiceCollection();
+var builder = WebApplication.CreateBuilder(args);
 
-services.AddSingleton<HttpClient>();
-//Websocket services
-services.AddSingleton<WebSocketService>();
+// Services
+builder.Services.AddSingleton<HttpClient>();
+builder.Services.AddSingleton<WebSocketService>();
 
+var app = builder.Build();
 
-services.AddLogging(configure => configure.AddConsole());
+// endpoints
 
-var serviceProvider = services.BuildServiceProvider();
-var wsService = serviceProvider.GetRequiredService<WebSocketService>();
+app.MapInfoEndpoints();
+
+// Start WebSocket service in background
+var wsService = app.Services.GetRequiredService<WebSocketService>();
 
 const string wsBase = "ws://91.142.26.98:5000/ws";
 const string idFile = "client-id.txt";
 
-var clientId = File.Exists(idFile) ? await File.ReadAllTextAsync(idFile) : null;
-var wsUri = clientId is null ? wsBase : $"{wsBase}?id={clientId}";
+string? clientId;
+
+if (File.Exists(idFile))
+    clientId = await File.ReadAllTextAsync(idFile);
+else
+    clientId = null;
+
+var wsUri = clientId switch
+{
+    null => wsBase,
+    _ => $"{wsBase}?id={clientId}"
+};
 
 using var cts = new CancellationTokenSource();
-Console.CancelKeyPress += (_, e)=>{ e.Cancel=true; cts.Cancel(); };
+Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
 
-await wsService.StartAsync(wsUri, clientId is null, idFile, cts.Token);
+_ = wsService.StartAsync(wsUri, clientId is null, idFile, cts.Token);
+
+app.Run();

@@ -25,6 +25,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 //services
 builder.Services.AddSingleton<WsClientService>();
+builder.Services.AddSingleton<AuthService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddDbContext<AppDataContext>(options =>
