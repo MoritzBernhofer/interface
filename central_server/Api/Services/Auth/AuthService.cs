@@ -30,8 +30,8 @@ public class AuthService(IConfiguration configuration, IHttpContextAccessor http
     {
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -46,12 +46,13 @@ public class AuthService(IConfiguration configuration, IHttpContextAccessor http
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
             signingCredentials: credentials);
-
+        
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     public bool VerifyPassword(string password, string hashedPassword)
     {
+        Console.WriteLine("ads");
         return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
     }
 }

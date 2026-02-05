@@ -19,9 +19,13 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Configuration
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false);
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddEnvironmentVariables();
+
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 //services
@@ -29,6 +33,7 @@ builder.Services.AddSingleton<WsClientService>();
 builder.Services.AddSingleton<WsReceiver>();
 builder.Services.AddSingleton<CLogger>();
 builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddDbContext<AppDataContext>(options =>
     options.UseSqlite(connectionString));

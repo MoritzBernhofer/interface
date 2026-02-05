@@ -53,6 +53,7 @@ export class LoginComponent {
   }
 
   onRegister(): void {
+    console.log("here register")
     if (!this.registerName || !this.registerEmail || !this.registerPassword) {
       this.error.set('Please fill in all fields');
       return;

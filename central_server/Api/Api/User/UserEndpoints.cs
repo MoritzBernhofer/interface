@@ -51,6 +51,14 @@ public static class UserEndpoints
             Email = dto.Email,
             Password = hashedPassword
         };
+        
+        var existingUser = await db.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+
+        if (existingUser is not null)
+        {
+            return Results.Conflict("Email already exists");
+        }
+        
         db.Users.Add(user);
         await db.SaveChangesAsync();
         return Results.Ok(new UserDto(user.Id, user.Name, user.Email));

@@ -23,6 +23,7 @@ public static class AuthEndpoints
     private static async Task<IResult> HandleLogin(LoginDto dto, AppDataContext db, AuthService authService)
     {
         var user = await db.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        
         if (user is null)
             return Results.Unauthorized();
 
