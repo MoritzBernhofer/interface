@@ -8,9 +8,8 @@ public static class InfoApi
     {
         app.MapGet("/post_info", async (WebSocketService wsService, HttpContext context) =>
         {
-            // Read the request body
             using var reader = new StreamReader(context.Request.Body);
-            var body = await reader.ReadToEndAsync();
+            var body = "MAMA MIA";
 
             if (!wsService.IsConnected)
             {

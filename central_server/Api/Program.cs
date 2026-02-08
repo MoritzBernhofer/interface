@@ -10,6 +10,7 @@ using central_server.Api.WS;
 using central_server.Database;
 using central_server.Logging;
 using central_server.Services.Auth;
+using central_server.Services.Iot;
 using central_server.Services.WS;
 using central_server.WS;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,6 +34,7 @@ builder.Services.AddSingleton<WsClientService>();
 builder.Services.AddSingleton<WsReceiver>();
 builder.Services.AddSingleton<CLogger>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IotServiceHandler>();
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddDbContext<AppDataContext>(options =>

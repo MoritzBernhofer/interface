@@ -1,5 +1,6 @@
 using System.Net.WebSockets;
 using System.Text;
+using central_server.Logging;
 using central_server.Services.WS;
 
 namespace central_server.WS;
@@ -15,7 +16,7 @@ public static class WsEndpoints
     private static async Task HandleRegisterWsClient(
         HttpContext context,
         WsClientService svc,
-        ILogger<WsClientService> logger,
+        CLogger logger,
         WsReceiver handler,
         CancellationToken ct = default)
     {
@@ -33,7 +34,7 @@ public static class WsEndpoints
         if (isNew)
         {
             id = Guid.NewGuid().ToString();
-            logger.LogInformation("New WS client with id: {ID}", id);
+            logger.LogInformation($"New WS client with id: {id}");
         }
 
         svc.AddOrUpdate(socket, id!);
@@ -56,16 +57,17 @@ public static class WsEndpoints
                     
                     var content = Encoding.UTF8.GetString(buf, 0, res.Count);
                     
-                    handler.Handle(content);
+                    var response = await handler.Handle(content);
+                    
                 }
                 catch (WebSocketException wsex) when (wsex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
                 {
-                    logger.LogWarning("Client {ID} closed connection without proper close handshake", id);
+                    logger.LogWarning($"Client {id} closed connection without proper close handshake");
                     break;
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError("Unexpected error in WebSocket receive loop for client {ID}", id);
+                    logger.LogError($"Unexpected error in WebSocket receive loop for client {id}");
                     break;
                 }
             }
@@ -81,11 +83,11 @@ public static class WsEndpoints
                 }
                 catch (Exception ex)
                 {
-                    logger.LogWarning(ex, "Error while closing WebSocket for client {ID}", id);
+                    logger.LogWarning($"Error while closing WebSocket for client {id}", ex);
                 }
             }
 
-            logger.LogInformation("Disconnected socket with id: {ID}", id);
+            logger.LogInformation($"Disconnected socket with id: {id}");
         }
     }
 }

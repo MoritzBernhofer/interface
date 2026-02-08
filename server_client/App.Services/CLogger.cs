@@ -1,4 +1,6 @@
-namespace central_server.Logging;
+using Microsoft.Extensions.Logging;
+
+namespace Api.Services;
 
 public class CLogger(ILogger<CLogger> logger)
 {

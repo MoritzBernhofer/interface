@@ -1,4 +1,5 @@
 using Api.Services;
+using Api.Services.Iot;
 using App.Api;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Services
 builder.Services.AddSingleton<HttpClient>();
 builder.Services.AddSingleton<WebSocketService>();
+builder.Services.AddSingleton<CLogger>();
+builder.Services.AddSingleton<IotWorkflowManager>();
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddHostedService(sp => sp.GetRequiredService<IotWorkflowManager>());
+
+
+
 
 var app = builder.Build();
 

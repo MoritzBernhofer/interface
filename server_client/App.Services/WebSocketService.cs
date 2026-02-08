@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Api.Services;
 
-public class WebSocketService(ILogger<WebSocketService> logger)
+public class WebSocketService(CLogger logger, MessageHandler handler)
 {
     private ClientWebSocket? _ws;
     private readonly SemaphoreSlim _sendLock = new(1, 1);
@@ -24,18 +24,12 @@ public class WebSocketService(ILogger<WebSocketService> logger)
         try
         {
             await _ws.SendAsync(bytes, WebSocketMessageType.Text, true, ct);
-            logger.LogInformation("Sent message: {Message}", message);
+            logger.LogInformation($"Sent message: {message}");
         }
         finally
         {
             _sendLock.Release();
         }
-    }
-
-    public async Task SendJsonAsync<T>(T data, CancellationToken ct = default)
-    {
-        var json = JsonSerializer.Serialize(data);
-        await SendAsync(json, ct);
     }
 
     public async Task StartAsync(string uri, bool expectWelcome, string idFile, CancellationToken appCt)
@@ -49,7 +43,7 @@ public class WebSocketService(ILogger<WebSocketService> logger)
 
             try
             {
-                logger.LogInformation("connecting to {Uri} ...", uri);
+                logger.LogInformation($"connecting to {uri} ...");
                 await _ws.ConnectAsync(new Uri(uri), appCt);
                 logger.LogInformation("connected");
 
@@ -66,18 +60,18 @@ public class WebSocketService(ILogger<WebSocketService> logger)
                     {
                         var id = content["CLIENT_ID:".Length..];
                         await File.WriteAllTextAsync(idFile, id, appCt);
-                        logger.LogInformation("assigned id = {ID} (saved to {IDFile})", id, idFile);
+                        logger.LogInformation($"assigned id = {id} (saved to {idFile})");
                         expectWelcome = false;
                         continue;
                     }
 
                     try
                     {
-                        await MessageHandler.Handle(content);
+                        await handler.Handle(content);
                     }
                     catch (JsonException ex)
                     {
-                        logger.LogWarning(ex, "Failed to deserialize message: {Message}", content);
+                        logger.LogWarning($"Failed to deserialize message: {content}", ex);
                     }
                 }
             }
