@@ -67,7 +67,7 @@ public class WebSocketService(CLogger logger, MessageHandler handler)
 
                     try
                     {
-                        await handler.Handle(content);
+                        await handler.Handle(content, this);
                     }
                     catch (JsonException ex)
                     {

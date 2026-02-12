@@ -5,10 +5,10 @@ using App.Api;
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
-builder.Services.AddSingleton<HttpClient>();
 builder.Services.AddSingleton<WebSocketService>();
 builder.Services.AddSingleton<CLogger>();
 builder.Services.AddSingleton<IotWorkflowManager>();
+builder.Services.AddSingleton<MessageHandler>();
 
 builder.Services.AddHttpClient();
 

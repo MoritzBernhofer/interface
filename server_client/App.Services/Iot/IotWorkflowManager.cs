@@ -18,11 +18,11 @@ public sealed class JobInfo
     public JobState State { get; set; } = JobState.Pending;
 }
 
-public class IotWorkflowManager(IHttpClientFactory httpClientFactory, WebSocketService webSocketService) : BackgroundService
+public class IotWorkflowManager(IHttpClientFactory httpClientFactory) : BackgroundService
 {
     private readonly ConcurrentDictionary<int, HttpWorkflowRunner> _runners = new();
 
-    public void StartWorkflow(HttpWorkflow workflow)
+    public void StartWorkflow(HttpWorkflow workflow, WebSocketService webSocketService)
     {
         if (workflow.SleepTime <= 0)
             throw new ArgumentOutOfRangeException(nameof(workflow.SleepTime), "Must be > 0.");

@@ -16,6 +16,7 @@ public static class InfoApi
                 return Results.Problem("WebSocket not connected to central server");
             }
 
+
             try
             {
                 await wsService.SendAsync(body);
