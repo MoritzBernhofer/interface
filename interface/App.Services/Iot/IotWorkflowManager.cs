@@ -22,14 +22,14 @@ public class IotWorkflowManager(IHttpClientFactory httpClientFactory) : Backgrou
 {
     private readonly ConcurrentDictionary<int, HttpWorkflowRunner> _runners = new();
 
-    public void StartWorkflow(HttpWorkflow workflow, WebSocketService webSocketService)
+    public void StartWorkflow(HttpWorkflow workflow)
     {
         if (workflow.SleepTime <= 0)
             throw new ArgumentOutOfRangeException(nameof(workflow.SleepTime), "Must be > 0.");
 
 
         var info = new JobInfo { Id = workflow.Id };
-        var runner = new HttpWorkflowRunner(info, workflow, httpClientFactory, webSocketService);
+        var runner = new HttpWorkflowRunner(info, workflow, httpClientFactory);
 
         if (!_runners.TryAdd(workflow.Id, runner))
             throw new InvalidOperationException("ID collision.");

@@ -5,7 +5,7 @@ namespace Api.Services;
 
 public class MessageHandler(CLogger logger, IotWorkflowManager iotWorkflowManager)
 {
-    public async Task<string> Handle(string message, WebSocketService webSocketService)
+    public async Task<string> Handle(string message)
     {
         var parts = message.Split('|');
 
@@ -26,7 +26,7 @@ public class MessageHandler(CLogger logger, IotWorkflowManager iotWorkflowManage
                     Body = parts[3],
                     SleepTime = int.Parse(parts[4])
                 };
-                iotWorkflowManager.StartWorkflow(workflow, webSocketService);
+                iotWorkflowManager.StartWorkflow(workflow);
                 break;
             case "DataIn":
                 break;

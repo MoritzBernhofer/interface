@@ -3,8 +3,7 @@ namespace Api.Services.Iot;
 public class HttpWorkflowRunner(
     JobInfo info,
     HttpWorkflow workflow,
-    IHttpClientFactory httpClientFactory,
-    WebSocketService webSocketService)
+    IHttpClientFactory httpClientFactory)
 {
     private readonly CancellationTokenSource _cts = new();
     private Task? _loop;
@@ -37,8 +36,7 @@ public class HttpWorkflowRunner(
 
                 var result = await client.GetAsync(workflow.Url, ct);
                 var content = await result.Content.ReadAsStringAsync(ct);
-                await webSocketService.SendAsync($"DataIn|{workflow.Id}|{content}", ct);
-                //Work
+                //save answer
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
