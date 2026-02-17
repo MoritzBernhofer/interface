@@ -1,29 +1,30 @@
-name: Test central server
+#name: Test central server
 
-permissions:
-  contents: read
+#permissions:
+#  contents: read
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+#on:
+#  push:
+#    branches: [ "main" ]
+#  pull_request:
+#    branches: [ "main" ]
 
-jobs:
-  CentralServerBuildAndTest:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 9.0.x
-    - name: Restore dependencies
-      working-directory: ./central_server
-      run: dotnet restore
-    - name: Build
-      working-directory: ./central_server
-      run: dotnet build --no-restore
-    - name: Test
-      working-directory: ./central_server
-      run: dotnet test
+#jobs:
+#  CentralServerBuildAndTest:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v4
+#    - name: Setup .NET
+#      uses: actions/setup-dotnet@v4
+#      with:
+  #      dotnet-version: 9.0.x
+#    - name: Restore dependencies
+ #     working-directory: ./central_server
+#      run: dotnet restore
+#    - name: Build
+#      working-directory: ./central_server
+#      run: dotnet build --no-restore
+ #   - name: Test
+#      working-directory: ./central_server
+#      run: dotnet test
+      

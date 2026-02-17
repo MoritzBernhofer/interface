@@ -1,156 +1,156 @@
-name: Build and release Electron app
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-permissions:
-  contents: write
-
-jobs:
-  build-mac:
-    if: contains(github.event.head_commit.message, '#build')
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: |
-          cd interface_client
-          npm install
-
-      - name: Build for macOS
-        run: |
-          cd interface_client
-          npm run package -- --mac
-
-      - name: Show output structure
-        run: ls -laR interface_client/release/build
-
-      - name: Upload mac x64
-        uses: actions/upload-artifact@v4
-        with:
-          name: mac-x64
-          path: interface_client/release/build/mac/**/*
-
-      - name: Upload mac arm64
-        uses: actions/upload-artifact@v4
-        with:
-          name: mac-arm64
-          path: interface_client/release/build/mac-arm64/**/*
-
-      - name: Upload dmg + zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: mac-installers
-          path: |
-            interface_client/release/build/*.dmg
-            interface_client/release/build/*.zip
-
-  build-linux:
-    runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, '#build')
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: |
-          cd interface_client
-          npm install
-
-      - name: Build for Linux
-        run: |
-          cd interface_client
-          npm run package -- --linux
-
-      - name: Upload Linux AppImage
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-appimage
-          path: interface_client/release/build/*.AppImage
-
-      - name: Upload other Linux builds
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-extra
-          path: interface_client/release/build/linux-*/**
-
-  build-windows:
-    runs-on: windows-latest
-    if: contains(github.event.head_commit.message, '#build')
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: |
-          cd interface_client
-          npm install
-
-      - name: Build for Windows
-        run: |
-          cd interface_client
-          npm run package -- --win
-
-      - name: Upload Windows .exe
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-exe
-          path: interface_client/release/build/*.exe
-
-      - name: Upload other Windows builds
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-extra
-          path: interface_client/release/build/win-*/**
-
-  release:
-    if: contains(github.event.head_commit.message, '#build')
-    needs: [ build-mac, build-linux, build-windows ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download mac artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: mac-installers
-          path: artifacts/mac
-
-      - name: Download linux artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-appimage
-          path: artifacts/linux
-
-      - name: Download windows artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-exe
-          path: artifacts/windows
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ github.run_number }}
-          name: Release v${{ github.run_number }}
-          generate_release_notes: true
-          files: |
-            artifacts/**/*
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# name: Build and release Electron app
+# 
+# on:
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
+# 
+# permissions:
+#   contents: write
+# 
+# jobs:
+#   build-mac:
+#     if: contains(github.event.head_commit.message, '#build')
+#     runs-on: macos-latest
+#     steps:
+#       - uses: actions/checkout@v3
+# 
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
+# 
+#       - name: Install dependencies
+#         run: |
+#           cd interface_client
+#           npm install
+# 
+#       - name: Build for macOS
+#         run: |
+#           cd interface_client
+#           npm run package -- --mac
+# 
+#       - name: Show output structure
+#         run: ls -laR interface_client/release/build
+# 
+#       - name: Upload mac x64
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: mac-x64
+#           path: interface_client/release/build/mac/**/*
+# 
+#       - name: Upload mac arm64
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: mac-arm64
+#           path: interface_client/release/build/mac-arm64/**/*
+# 
+#       - name: Upload dmg + zip
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: mac-installers
+#           path: |
+#             interface_client/release/build/*.dmg
+#             interface_client/release/build/*.zip
+# 
+#   build-linux:
+#     runs-on: ubuntu-latest
+#     if: contains(github.event.head_commit.message, '#build')
+#     steps:
+#       - uses: actions/checkout@v3
+# 
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
+# 
+#       - name: Install dependencies
+#         run: |
+#           cd interface_client
+#           npm install
+# 
+#       - name: Build for Linux
+#         run: |
+#           cd interface_client
+#           npm run package -- --linux
+# 
+#       - name: Upload Linux AppImage
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: linux-appimage
+#           path: interface_client/release/build/*.AppImage
+# 
+#       - name: Upload other Linux builds
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: linux-extra
+#           path: interface_client/release/build/linux-*/**
+# 
+#   build-windows:
+#     runs-on: windows-latest
+#     if: contains(github.event.head_commit.message, '#build')
+#     steps:
+#       - uses: actions/checkout@v3
+# 
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 22
+# 
+#       - name: Install dependencies
+#         run: |
+#           cd interface_client
+#           npm install
+# 
+#       - name: Build for Windows
+#         run: |
+#           cd interface_client
+#           npm run package -- --win
+# 
+#       - name: Upload Windows .exe
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: windows-exe
+#           path: interface_client/release/build/*.exe
+# 
+#       - name: Upload other Windows builds
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: windows-extra
+#           path: interface_client/release/build/win-*/**
+# 
+#   release:
+#     if: contains(github.event.head_commit.message, '#build')
+#     needs: [ build-mac, build-linux, build-windows ]
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Download mac artifacts
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: mac-installers
+#           path: artifacts/mac
+# 
+#       - name: Download linux artifacts
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: linux-appimage
+#           path: artifacts/linux
+# 
+#       - name: Download windows artifacts
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: windows-exe
+#           path: artifacts/windows
+# 
+#       - name: Create GitHub Release
+#         uses: softprops/action-gh-release@v1
+#         with:
+#           tag_name: v${{ github.run_number }}
+#           name: Release v${{ github.run_number }}
+#           generate_release_notes: true
+#           files: |
+#             artifacts/**/*
+# 
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
