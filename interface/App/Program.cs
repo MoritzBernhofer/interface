@@ -1,5 +1,6 @@
 using Api.Services;
 using Api.Services.Iot;
+using App.Api;
 using App.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,5 +20,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddHostedService(sp => sp.GetRequiredService<IotWorkflowManager>());
 
 var app = builder.Build();
+
+app.MapInfoApi();
+app.MapWorkflowApi();
 
 app.Run();

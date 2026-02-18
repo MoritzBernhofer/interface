@@ -18,8 +18,5 @@
     <ItemGroup>
         <ProjectReference Include="..\App.Services\App.Services.csproj"/>
     </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Api\"/>
-    </ItemGroup>
 
 </Project>
