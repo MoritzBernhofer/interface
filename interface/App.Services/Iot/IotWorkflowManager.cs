@@ -18,7 +18,7 @@ public sealed class JobInfo
     public JobState State { get; set; } = JobState.Pending;
 }
 
-public class IotWorkflowManager(IHttpClientFactory httpClientFactory) : BackgroundService
+public class IotWorkflowManager(IHttpClientFactory httpClientFactory, CLogger logger) : BackgroundService
 {
     private readonly ConcurrentDictionary<int, HttpWorkflowRunner> _runners = new();
 
@@ -29,7 +29,7 @@ public class IotWorkflowManager(IHttpClientFactory httpClientFactory) : Backgrou
 
 
         var info = new JobInfo { Id = workflow.Id };
-        var runner = new HttpWorkflowRunner(info, workflow, httpClientFactory);
+        var runner = new HttpWorkflowRunner(info, workflow, httpClientFactory, logger);
 
         if (!_runners.TryAdd(workflow.Id, runner))
             throw new InvalidOperationException("ID collision.");
@@ -61,6 +61,7 @@ public class Workflow
 
 public class HttpWorkflow : Workflow
 {
+    public required string Ipv4 { get; set; }
     public required string Url { get; set; }
     public required string Body { get; set; }
     public required int SleepTime { get; set; }

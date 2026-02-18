@@ -11,6 +11,8 @@ public class IotService
 
     public IotServiceType Type { get; set; }
     public int IotDeviceId { get; set; }
+
+    public IotDevice IotDevice { get; set; }
 }
 
 public enum IotServiceType

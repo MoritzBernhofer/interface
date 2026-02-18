@@ -3,7 +3,8 @@ namespace Api.Services.Iot;
 public class HttpWorkflowRunner(
     JobInfo info,
     HttpWorkflow workflow,
-    IHttpClientFactory httpClientFactory)
+    IHttpClientFactory httpClientFactory,
+    CLogger logger)
 {
     private readonly CancellationTokenSource _cts = new();
     private Task? _loop;
@@ -28,13 +29,15 @@ public class HttpWorkflowRunner(
 
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(workflow.SleepTime));
 
+        var url = $"http://{workflow.Ipv4}{workflow.Url}";
+
         while (!ct.IsCancellationRequested)
         {
             try
             {
                 var client = httpClientFactory.CreateClient();
 
-                var result = await client.GetAsync(workflow.Url, ct);
+                var result = await client.GetAsync(url, ct);
                 var content = await result.Content.ReadAsStringAsync(ct);
                 //save answer
             }
@@ -44,7 +47,7 @@ public class HttpWorkflowRunner(
             }
             catch (Exception ex)
             {
-                //TODO throw error, to central server
+                //TODO throw error
                 Info.State = JobState.Faulted;
             }
 

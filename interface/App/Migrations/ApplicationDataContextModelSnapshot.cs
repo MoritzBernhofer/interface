@@ -188,11 +188,13 @@ namespace App.Migrations
 
             modelBuilder.Entity("App.Database.Model.Iot.IotService", b =>
                 {
-                    b.HasOne("App.Database.Model.Iot.IotDevice", null)
+                    b.HasOne("App.Database.Model.Iot.IotDevice", "IotDevice")
                         .WithMany("IotService")
                         .HasForeignKey("IotDeviceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("IotDevice");
                 });
 
             modelBuilder.Entity("App.Database.Model.UserRelated.Home", b =>
