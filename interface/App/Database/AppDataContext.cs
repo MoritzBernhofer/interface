@@ -7,11 +7,16 @@ namespace App.Database;
 
 public class ApplicationDataContext(DbContextOptions<ApplicationDataContext> options) : DbContext(options)
 {
+    //Iot
     public DbSet<IotDevice> IotDevices => Set<IotDevice>();
     public DbSet<IotDeviceLog> IotDeviceLogs => Set<IotDeviceLog>();
     public DbSet<IotService> IotServices => Set<IotService>();
+
+    //UserRelated
     public DbSet<User> Users => Set<User>();
     public DbSet<UserLog> UserLogs => Set<UserLog>();
+    public DbSet<Home> Homes => Set<Home>();
+    public DbSet<Room> Rooms => Set<Room>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

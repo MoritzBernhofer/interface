@@ -6,4 +6,5 @@ public class IotDevice
     public string IPv4 { get; set; }
     public string Name { get; set; }
     public List<IotService> IotService { get; set; }
+    public List<IotDeviceLog> IotDeviceLogs { get; set; }
 }
