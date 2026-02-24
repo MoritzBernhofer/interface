@@ -28,13 +28,13 @@ public class HttpWorkflowRunner(
         Info.State = JobState.Running;
 
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(workflow.SleepTime));
-
         var url = $"http://{workflow.Ipv4}{workflow.Url}";
 
         while (!ct.IsCancellationRequested)
         {
             try
             {
+                logger.LogInformation($"Job running, {url}");
                 var client = httpClientFactory.CreateClient();
 
                 var result = await client.GetAsync(url, ct);
@@ -43,12 +43,14 @@ public class HttpWorkflowRunner(
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
+                logger.LogWarning($"Job canceled, {url}");
                 // normal shutdown
             }
             catch (Exception ex)
             {
                 //TODO throw error
                 Info.State = JobState.Faulted;
+                logger.LogError($"Job failed, {url}", ex);
             }
 
             if (!await timer.WaitForNextTickAsync(ct)) break;

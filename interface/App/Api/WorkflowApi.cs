@@ -11,7 +11,6 @@ public static class WorkflowApi
 {
     public static void MapWorkflowApi(this WebApplication app)
     {
-        // Group: /Workflow
         var group = app.MapGroup("/Workflow")
             .WithTags("Workflow")
             .WithOpenApi(o =>
@@ -21,7 +20,6 @@ public static class WorkflowApi
                 return o;
             });
 
-        // Sub-group: /Workflow/http
         var httpGroup = group.MapGroup("/http")
             .WithTags("Workflow - HTTP")
             .WithOpenApi(o =>
