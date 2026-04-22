@@ -3,7 +3,6 @@ using Api.Services.Iot;
 using App.Database;
 using App.Database.Model.Iot;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
 
 namespace App.Api;
 
@@ -12,25 +11,13 @@ public static class WorkflowApi
     public static void MapWorkflowApi(this WebApplication app)
     {
         var group = app.MapGroup("/Workflow")
-            .WithTags("Workflow")
-            .WithOpenApi(o =>
-            {
-                o.Summary = "Workflow endpoints";
-                o.Description = "Endpoints for creating and managing workflows bound to IoT devices.";
-                return o;
-            });
+            .WithTags("Workflow");
 
         var httpGroup = group.MapGroup("/http")
-            .WithTags("Workflow - HTTP")
-            .WithOpenApi(o =>
-            {
-                o.Summary = "HTTP workflows";
-                o.Description = "Endpoints for HTTP-based workflows.";
-                return o;
-            });
+            .WithTags("Workflow - HTTP");
 
         httpGroup.MapPost("/", CreateHttpWorkflow)
-            .WithName("CreateHttpWorkflow") // operationId for client generation
+            .WithName("CreateHttpWorkflow")
             .WithSummary("Create and start an HTTP workflow")
             .WithDescription(
                 "Creates a new HTTP workflow for a given IoT device, persists it, and starts the workflow runner.")
@@ -38,15 +25,7 @@ public static class WorkflowApi
             .Produces<CreateWorkflowCreatedResponse>(StatusCodes.Status201Created)
             .Produces<string>(StatusCodes.Status404NotFound, "text/plain")
             .ProducesValidationProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .WithOpenApi(op =>
-            {
-                op.OperationId = "CreateHttpWorkflow";
-                op.Responses["201"].Description = "Workflow created and started.";
-                op.Responses["404"].Description = "IoT device not found.";
-                op.Responses["400"].Description = "Validation failed.";
-                return op;
-            });
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
     }
 
     private static async Task<IResult> CreateHttpWorkflow(
