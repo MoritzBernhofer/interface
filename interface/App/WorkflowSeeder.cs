@@ -9,24 +9,24 @@ public class WorkflowSeeder(ApplicationDataContext db, IotWorkflowManager manage
 {
     public async Task SeedWorkflows()
     {
-        var workflows = await db.IotServices
-            .Include(iotService => iotService.IotDevice)
-            .ToListAsync();
-
-        foreach (var workflow in workflows)
-        {
-            var httpWorkflow = new HttpWorkflow()
-            {
-                Id = workflow.Id,
-                Ipv4 = workflow.IotDevice.IPv4,
-                Body = workflow.Body,
-                SleepTime = workflow.SleepTime,
-                Url = workflow.Url,
-            };
-
-            logger.LogInformation($"Workflow {workflow.Id} created");
-
-            manager.StartWorkflow(httpWorkflow);
-        }
+        // var workflows = await db.IotServices
+        //     .Include(iotService => iotService.IotDevice)
+        //     .ToListAsync();
+        //
+        // foreach (var workflow in workflows)
+        // {
+        //     var httpWorkflow = new HttpWorkflow()
+        //     {
+        //         Id = workflow.Id,
+        //         Ipv4 = workflow.IotDevice.IPv4,
+        //         Body = workflow.Body,
+        //         SleepTime = workflow.SleepTime,
+        //         Url = workflow.Url,
+        //     };
+        //
+        //     logger.LogInformation($"Workflow {workflow.Id} created");
+        //
+        //     manager.StartWorkflow(httpWorkflow);
+        // }
     }
 }

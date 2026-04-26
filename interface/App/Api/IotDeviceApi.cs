@@ -11,21 +11,15 @@ public static class IotDeviceApi
     public static void MapIotDeviceApi(this WebApplication app)
     {
         var group = app.MapGroup("/Devices")
-            .WithTags("Devices")
-            .WithOpenApi(o =>
-            {
-                o.Summary = "IoT device endpoints";
-                o.Description = "Create, list, update and delete IoT devices.";
-                return o;
-            });
+            .WithTags("Devices");
+
 
         group.MapGet("/", GetAllDevices)
             .WithName("GetAllDevices")
             .WithSummary("List all IoT devices")
             .WithDescription("Returns all registered IoT devices.")
             .Produces<IReadOnlyList<IotDevice>>(StatusCodes.Status200OK)
-            .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .WithOpenApi();
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         group.MapPost("/", AddDevice)
             .WithName("AddDevice")
@@ -34,8 +28,7 @@ public static class IotDeviceApi
             .Accepts<DeviceDto>("application/json")
             .Produces<IotDevice>(StatusCodes.Status201Created)
             .ProducesValidationProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .WithOpenApi();
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         group.MapDelete("/{deviceId:int}", DeleteDevice)
             .WithName("DeleteDevice")
@@ -43,8 +36,7 @@ public static class IotDeviceApi
             .WithDescription("Deletes a device by its id.")
             .Produces(StatusCodes.Status204NoContent)
             .Produces<string>(StatusCodes.Status404NotFound, "text/plain")
-            .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .WithOpenApi();
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         group.MapPatch("/{deviceId:int}", UpdateDevice)
             .WithName("UpdateDevice")
@@ -54,8 +46,7 @@ public static class IotDeviceApi
             .Produces<IotDevice>(StatusCodes.Status200OK)
             .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .Produces<string>(StatusCodes.Status404NotFound, "text/plain")
-            .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .WithOpenApi();
+            .ProducesProblem(StatusCodes.Status500InternalServerError);
     }
 
     private static async Task<IResult> GetAllDevices(ApplicationDataContext db)

@@ -1,13 +1,36 @@
+using System.Text;
 using Api.Services;
 using Api.Services.Iot;
 using App;
 using App.Api;
 using App.Database;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+//secret
+DotNetEnv.Env.Load();
+var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+
+// Auth
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret!))
+        };
+    });
+builder.Services.AddAuthorization();
 
 // Services
 builder.Services.AddSingleton<CLogger>();
@@ -38,6 +61,11 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
+//middleware
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 using (var scope = app.Services.CreateScope())
 {
     var seeder = scope.ServiceProvider.GetRequiredService<WorkflowSeeder>();
@@ -64,4 +92,3 @@ app.MapIotDeviceApi();
 app.MapGet("/", () => "Iot");
 
 app.Run();
-
