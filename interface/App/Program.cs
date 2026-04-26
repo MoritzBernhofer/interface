@@ -85,9 +85,11 @@ if (app.Environment.IsDevelopment())
 }
 
 
+//API
 app.MapInfoApi();
 app.MapWorkflowApi();
 app.MapIotDeviceApi();
+app.MapUserApi();
 
 app.MapGet("/", () => "Iot");
 

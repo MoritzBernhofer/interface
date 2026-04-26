@@ -14,7 +14,7 @@ namespace App.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.13");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
 
             modelBuilder.Entity("App.Database.Model.Iot.IotDevice", b =>
                 {
@@ -43,6 +43,7 @@ namespace App.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
+                        .HasMaxLength(4000)
                         .HasColumnType("TEXT");
 
                     b.Property<float>("CreatedAt")
@@ -66,6 +67,7 @@ namespace App.Migrations
 
                     b.Property<string>("Body")
                         .IsRequired()
+                        .HasMaxLength(20000)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("IotDeviceId")
@@ -83,6 +85,7 @@ namespace App.Migrations
 
                     b.Property<string>("Url")
                         .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -100,6 +103,7 @@ namespace App.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
@@ -124,6 +128,7 @@ namespace App.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -141,10 +146,12 @@ namespace App.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Username")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -160,6 +167,7 @@ namespace App.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
+                        .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
                     b.Property<float>("CreatedAt")
@@ -239,8 +247,7 @@ namespace App.Migrations
 
             modelBuilder.Entity("App.Database.Model.UserRelated.User", b =>
                 {
-                    b.Navigation("Home")
-                        .IsRequired();
+                    b.Navigation("Home");
 
                     b.Navigation("UserLogs");
                 });
