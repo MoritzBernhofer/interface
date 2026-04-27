@@ -1,1 +1,56 @@
-<div>hello</div>
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="auth-title">
+
+    @if (page === 'Register') {
+      <div class="register-state">
+        <h2>Create your account</h2>
+        <p>Registration form coming soon.</p>
+      </div>
+    } @else {
+      <form class="auth-form" action="#" method="post">
+        <div class="field">
+          <label for="username">Username</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            autocomplete="username"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+
+        <button class="submit-btn" type="submit">Log in</button>
+      </form>
+    }
+
+    <nav class="selector" aria-label="Authentication pages">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="page === 'Login'"
+        (click)="page = 'Login'"
+      >
+        Login
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="page === 'Register'"
+        (click)="page = 'Register'"
+      >
+        Register
+      </button>
+    </nav>
+  </section>
+</main>
